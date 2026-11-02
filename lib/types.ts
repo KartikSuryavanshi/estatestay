@@ -1,0 +1,2 @@
+export type Room = { id: string; name: string; slug: string; description: string; capacity: number; price: number; gstRate: number; images: string[]; amenities: string[]; bed: string; available: number };
+export type Enquiry = { id: string; ref: string; name: string; contact: string; source: 'WEBSITE' | 'EMAIL' | 'WHATSAPP'; message: string; category: 'ROOM_BOOKING' | 'WEDDING' | 'CORPORATE_OFFSITE' | 'COMPLAINT' | 'UNSORTED'; confidence: number; extracted: string; assigned: string; status: 'OPEN' | 'IN_PROGRESS' | 'RESOLVED'; replyDraft: string; created: string };

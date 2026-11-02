@@ -1,0 +1,3 @@
+export function formatINR(value: number) { return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(value); }
+export function nightsBetween(checkIn: string, checkOut: string) { return Math.max(0, Math.round((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / 86400000)); }
+export function calculatePrice(price: number, gstRate: number, nights: number, discount = 0) { const base = price * nights; const discounted = Math.max(0, base - discount); return { base: discounted, tax: Math.round(discounted * gstRate / 100), total: Math.round(discounted * (1 + gstRate / 100)) }; }
