@@ -2,7 +2,7 @@
 
 Repository URL: `https://github.com/example/estatestay`
 
-Live application URL: Not deployed in this workspace.
+Live application URL: Not deployed; production deployment requires a Vercel project and Supabase credentials.
 
 ## Product architecture
 
@@ -27,6 +27,14 @@ Large editorial imagery, serif display typography, restrained color, thin rules 
 ## Security
 
 Prisma parameterizes database queries, server routes validate all inputs, secrets are environment-only, the app does not collect passport details, and staff APIs are server-protected. A launch version must replace the demo cookie login with Auth.js, hash credentials, add CSRF/session hardening and managed rate limiting.
+
+## Verification snapshot
+
+- PostgreSQL migration and seed verified against Docker PostgreSQL on port 5433.
+- 13 automated unit/integration tests passed, including real concurrent last-villa booking and duplicate payment callback handling.
+- Playwright desktop guest/staff suite passed 3/3; mobile guest booking viewport passed at 390×844.
+- Live OpenAI classification was not run because no `OPENAI_API_KEY` was configured. Deterministic fallback and malformed/failure handling remain the verified path.
+- No live deployment URL exists yet.
 
 ## Assumptions, limitations and cuts
 

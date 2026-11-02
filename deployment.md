@@ -23,9 +23,7 @@ Open `http://localhost:3000`.
 
 ```bash
 docker compose up -d postgres
-export DATABASE_URL=postgresql://estatestay:estatestay@localhost:5433/estatestay
-export DIRECT_URL=$DATABASE_URL
-export NEXTAUTH_SECRET=replace-with-a-long-random-secret
+# Populate DATABASE_URL, DIRECT_URL and NEXTAUTH_SECRET in .env first.
 npx prisma migrate deploy
 npm run db:seed
 ```
@@ -53,7 +51,7 @@ The staff screen calls the server-side staff login endpoint. The seed account is
 ```bash
 npm test
 npm run build
-DATABASE_URL=postgresql://estatestay:estatestay@localhost:5433/estatestay DIRECT_URL=$DATABASE_URL NEXTAUTH_SECRET=test-secret npx vitest run
+npx vitest run
 ```
 
 ## Deployment

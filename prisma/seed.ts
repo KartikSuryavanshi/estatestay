@@ -24,8 +24,9 @@ async function main() {
     { ref: 'ENQ-4410', name: 'Ananya Rao', message: "Venue for my sister's wedding in Feb 2027, about 250 guests, 2 nights.", category: EnquiryCategory.WEDDING },
     { ref: 'ENQ-4411', name: 'Rohan Mehta', message: 'Is a villa free 14-16 Nov for 2 adults and a child?', category: EnquiryCategory.ROOM_BOOKING },
     { ref: 'ENQ-4412', name: 'Karthik Iyer', message: 'Team of 45 wants a January offsite with a conference hall.', category: EnquiryCategory.CORPORATE_OFFSITE }
+    ,{ ref: 'ENQ-4413', name: 'Meera Shah', message: 'The airport transfer was two hours late and no one called us.', category: EnquiryCategory.COMPLAINT }
   ];
-  for (const sample of samples) await prisma.enquiry.upsert({ where: { enquiryReference: sample.ref }, update: {}, create: { enquiryReference: sample.ref, senderName: sample.name, email: 'guest@example.com', source: 'WEBSITE', message: sample.message, category: sample.category, confidence: .95, assignedTo: staff.id, status: EnquiryStatus.OPEN, replyDraft: 'Thank you for reaching out to EstateStay. Our team will be in touch shortly.' } });
+  for (const sample of samples) { const enquiry = await prisma.enquiry.upsert({ where: { enquiryReference: sample.ref }, update: { category: sample.category }, create: { enquiryReference: sample.ref, senderName: sample.name, email: 'guest@example.com', source: 'WEBSITE', message: sample.message, category: sample.category, confidence: .95, assignedTo: staff.id, status: EnquiryStatus.OPEN, replyDraft: 'Thank you for reaching out to EstateStay. Our team will be in touch shortly.' } }); if (sample.category === EnquiryCategory.COMPLAINT) await prisma.complaintAlert.upsert({ where: { enquiryId: enquiry.id }, update: {}, create: { enquiryId: enquiry.id } }); }
 }
 
 main().catch(error => { console.error(error); process.exitCode = 1; }).finally(() => prisma.$disconnect());
