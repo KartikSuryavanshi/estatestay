@@ -16,9 +16,9 @@ export async function POST(request: Request) {
     try {
       const dbRoom = await prisma.roomCategory.findFirst({ where: { OR: [{ id: data.roomId }, { name: room.name }] } });
       if (!dbRoom) return NextResponse.json({ error: 'Room inventory is not configured.' }, { status: 409 });
-      const persisted = await createBookingWithInventory({ roomCategoryId: dbRoom.id, checkIn: data.checkIn, checkOut: data.checkOut, guestCount: Number(data.adults) + Number(data.children), idempotencyKey: data.idempotencyKey });
+      const persisted = await createBookingWithInventory({ roomCategoryId: dbRoom.id, checkIn: data.checkIn, checkOut: data.checkOut, guestCount: Number(data.adults) + Number(data.children), promoCode: data.promoCode, idempotencyKey: data.idempotencyKey });
       return NextResponse.json({ reference: persisted.bookingReference, room: room.name, checkIn: data.checkIn, checkOut: data.checkOut, base: persisted.baseAmount, tax: persisted.taxAmount, total: persisted.totalAmount, paymentStatus: persisted.paymentStatus }, { status: 201 });
-    } catch (error) { const reason = error instanceof Error ? error.message : 'BOOKING_FAILED'; return NextResponse.json({ error: reason === 'SOLD_OUT' ? 'This room is no longer available for all nights.' : 'We could not hold this stay.' }, { status: 409 }); }
+    } catch (error) { const reason = error instanceof Error ? error.message : 'BOOKING_FAILED'; return NextResponse.json({ error: reason === 'SOLD_OUT' ? 'This room is no longer available for all nights.' : reason === 'INVALID_PROMO' ? 'That promo code is invalid or expired.' : reason === 'CAPACITY_EXCEEDED' ? 'This room cannot accommodate that many guests.' : 'We could not hold this stay.' }, { status: 409 }); }
   }
   const price = calculatePrice(room.price, room.gstRate, nights); const reference = `ES-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
   return NextResponse.json({ reference, room: room.name, checkIn: data.checkIn, checkOut: data.checkOut, ...price, paymentStatus: 'PENDING', mode: 'preview-fallback' }, { status: 201 });

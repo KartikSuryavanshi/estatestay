@@ -18,7 +18,7 @@ export default defineConfig({
     { name: 'mobile', use: { viewport: { width: 390, height: 844 }, isMobile: false } }
   ],
   webServer: {
-    command: 'env DATABASE_URL=postgresql://estatestay:estatestay@127.0.0.1:5433/estatestay DIRECT_URL=postgresql://estatestay:estatestay@127.0.0.1:5433/estatestay NEXTAUTH_SECRET=test-secret NEXTAUTH_URL=http://127.0.0.1:3200 node_modules/.bin/next start -H 127.0.0.1 -p 3200',
+    command: 'node_modules/.bin/next start -H 127.0.0.1 -p 3200',
     url: 'http://127.0.0.1:3200',
     reuseExistingServer: false,
     timeout: 60_000

@@ -16,4 +16,22 @@ describe.skipIf(!enabled)('PostgreSQL payment lifecycle', () => {
     expect(await prisma.payment.count({ where: { bookingId: booking.id } })).toBe(1);
     await prisma.booking.delete({ where: { id: booking.id } }); await prisma.$disconnect();
   });
+  it('releases inventory after a failed payment', async () => {
+    const room = await prisma.roomCategory.findUniqueOrThrow({ where: { name: 'Estate Classic Room' } });
+    const booking = await createBookingWithInventory({ roomCategoryId: room.id, checkIn: '2026-12-12', checkOut: '2026-12-13', guestCount: 2, idempotencyKey: 'TEST-PAYMENT-FAILED-123456' });
+    const response = await simulatePayment(new Request('http://localhost/api/payments/simulate', { method: 'POST', body: JSON.stringify({ bookingReference: booking.bookingReference, outcome: 'failed', callbackKey: 'TEST-CALLBACK-FAILED-123456' }) }));
+    expect(response.status).toBe(200);
+    const persisted = await prisma.booking.findUniqueOrThrow({ where: { id: booking.id }, include: { hold: true } });
+    expect(persisted.status).toBe('CANCELLED');
+    expect(persisted.hold?.status).toBe('RELEASED');
+    await prisma.booking.delete({ where: { id: booking.id } }); await prisma.$disconnect();
+  });
+  it('validates and applies a seeded promo before GST', async () => {
+    const room = await prisma.roomCategory.findUniqueOrThrow({ where: { name: 'Estate Classic Room' } });
+    const booking = await createBookingWithInventory({ roomCategoryId: room.id, checkIn: '2026-12-14', checkOut: '2026-12-15', guestCount: 2, promoCode: 'estate10', idempotencyKey: 'TEST-PROMO-123456789' });
+    expect(booking.baseAmount).toBe(7650);
+    expect(booking.taxAmount).toBe(918);
+    expect(booking.totalAmount).toBe(8568);
+    await prisma.booking.delete({ where: { id: booking.id } }); await prisma.$disconnect();
+  });
 });

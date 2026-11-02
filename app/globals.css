@@ -16,3 +16,9 @@ button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
   .display { font-size: clamp(2.4rem, 12vw, 3.75rem); line-height: .98; }
   input, select, textarea { max-width: 100%; }
 }
+@media (max-width: 1023px) {
+  main:has(> aside.fixed.inset-y-0) > aside { position: relative; inset: auto; display: block; width: 100%; padding: 1.25rem; }
+  main:has(> aside.fixed.inset-y-0) > aside nav { display: flex; gap: .5rem; margin-top: 1.25rem; overflow-x: auto; }
+  main:has(> aside.fixed.inset-y-0) > aside nav button { width: auto; min-width: max-content; white-space: nowrap; }
+  main:has(> aside.fixed.inset-y-0) > aside > button.absolute { position: static; margin-top: 1rem; }
+}

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { calculatePrice, nightsBetween } from '../lib/utils';
 import { classifyFallback } from '../lib/ai';
+import { bookingSchema } from '../lib/validation';
 describe('booking rules',()=>{
   it('calculates GST from the configured tariff',()=>expect(calculatePrice(10000,12,2)).toEqual({base:20000,tax:2400,total:22400}));
   it('does not consume checkout night',()=>expect(nightsBetween('2026-11-02','2026-11-05')).toBe(3));
@@ -10,5 +11,9 @@ describe('booking rules',()=>{
     expect(classifyFallback("Venue for my sister's wedding in Feb 2027, about 250 guests, 2 nights.").category).toBe('WEDDING');
     expect(classifyFallback('Is a villa free 14-16 Nov for 2 adults and a child?').category).toBe('ROOM_BOOKING');
     expect(classifyFallback('Team of 45 wants a January offsite with a conference hall.').category).toBe('CORPORATE_OFFSITE');
+  });
+  it('rejects malformed or backwards booking dates',()=>{
+    const result = bookingSchema.safeParse({ checkIn: 'not-a-date', checkOut: '2026-11-02', adults: 2, children: 0, roomId: 'villa', guestName: 'Guest', email: 'guest@example.com', phone: '9999999999' });
+    expect(result.success).toBe(false);
   });
 });

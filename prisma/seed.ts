@@ -20,6 +20,8 @@ async function main() {
     }
   }
   const staff = await prisma.user.upsert({ where: { email: 'stay@estatestay.example' }, update: { passwordHash, role: Role.STAFF }, create: { name: 'EstateStay Staff', email: 'stay@estatestay.example', passwordHash, role: Role.STAFF } });
+  const validFrom = new Date(); validFrom.setUTCHours(0, 0, 0, 0); const validUntil = new Date(validFrom); validUntil.setUTCDate(validUntil.getUTCDate() + 119);
+  await prisma.promoCode.upsert({ where: { code: 'ESTATE10' }, update: { active: true, discountType: 'PERCENT', discountValue: 10, validFrom, validUntil }, create: { code: 'ESTATE10', discountType: 'PERCENT', discountValue: 10, validFrom, validUntil, active: true } });
   const samples = [
     { ref: 'ENQ-4410', name: 'Ananya Rao', message: "Venue for my sister's wedding in Feb 2027, about 250 guests, 2 nights.", category: EnquiryCategory.WEDDING },
     { ref: 'ENQ-4411', name: 'Rohan Mehta', message: 'Is a villa free 14-16 Nov for 2 adults and a child?', category: EnquiryCategory.ROOM_BOOKING },
